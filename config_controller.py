@@ -2,71 +2,8 @@
 from enum import Enum
 from typing import Dict, NoReturn
 
-import colors
 import json
 
-"""
-screen_width = 800
-screen_height = 600
-background_image = './images/backgrounds/space.jpg'
-
-frame_rate = 90
-
-row_count = 6
-brick_width = 60
-brick_height = 20
-brick_color = colors.RED1
-offset_y = brick_height + 10
-
-bowl_speed = 3
-bowl_radius = 8
-bowl_color = colors.GREEN
-
-paddle_width = 80
-paddle_height = 10
-paddle_color = colors.ALICEBLUE
-paddle_speed = 6
-
-status_offset_y = 5
-
-text_color = colors.YELLOW1
-initial_lives = 3
-lives_right_offset = 85
-lives_offset = screen_width - lives_right_offset
-score_offset = 5
-
-font_name = 'Arial'
-font_size = 20
-
-effect_duration = 20
-sounds_effects = dict(
-    brick_hit='./sounds/sound_effects/brick_hit.mp3',
-    paddle_hit='./sounds/sound_effects/paddle_hit.mp3',
-    minus_hp="./sounds/sound_effects/minus_hp.mp3",
-    death="./sounds/sound_effects/sound_of_dead.mp3",
-    effect_done='./sounds/sound_effects/bonus_taken_effect.mp3',
-    level_complete='./sounds/sound_effects/win_sound_1.mp3',
-    bonus_taken='./sounds/sound_effects/bonus_taken_effect.mp3',
-    start='./sounds/sound_effects/start_game.mp3',
-    new_record='./sounds/sound_effects/new_record.mp3',
-    win1='./sounds/sound_effects/win_sound_1.mp3',
-    win2='./sounds/sound_effects/win_sound_2.mp3'
-)
-
-death_message_duration = 5
-start_message_duration = 2
-win_message_duration = 4
-
-button_text_color = colors.WHITE,
-button_normal_back_color = colors.INDIANRED1
-button_hover_back_color = colors.INDIANRED2
-button_pressed_back_color = colors.INDIANRED3
-
-menu_offset_x = 20
-menu_offset_y = 300
-menu_button_w = 80
-menu_button_h = 50
-"""
 
 GENERAL_CONFIGS_FILE = "./configs/general_configs.json"
 
@@ -113,6 +50,7 @@ class ConfigController:
         self.menu_offset_y = unpacked_data["menu_offset_y"]
         self.menu_button_w = unpacked_data["menu_button_w"]
         self.menu_button_h = unpacked_data["menu_button_h"]
+        self.menu_button_interval = unpacked_data["menu_button_interval"]
         self.button_text_color = unpacked_data["button_text_color"]
         self.button_normal_back_color = unpacked_data["button_normal_back_color"]
         self.button_hover_back_color = unpacked_data["button_hover_back_color"]
@@ -197,6 +135,7 @@ class ConfigController:
             "menu_offset_y": self.menu_offset_y,
             "menu_button_w": self.menu_button_w,
             "menu_button_h": self.menu_button_h,
+            "menu_button_interval": self.menu_button_interval,
             "button_text_color": self.button_text_color,
             "button_normal_back_color": self.button_normal_back_color,
             "button_hover_back_color": self.button_hover_back_color,
@@ -241,73 +180,3 @@ class ConfigController:
         }
         with open(GENERAL_CONFIGS_FILE, 'w') as config_file:
             json.dump(new_config_data, config_file, indent='\t')
-
-"""
-if __name__ == "__main__":
-    with open(GENERAL_CONFIGS_FILE, "w") as f:
-        json.dump({
-            "general_params": {
-                "background_image": "./images/backgrounds/space.jpg",
-                "screen_width": 800,
-                "screen_height": 600,
-                "frame_rate": 90,
-                "effect_duration": 20,
-                "initial_lives": 3,
-                "sounds_effects": {
-                    "brick_hit": "./sounds/sound_effects/brick_hit.mp3",
-                    "paddle_hit": "./sounds/sound_effects/paddle_hit.mp3",
-                    "minus_hp": "./sounds/sound_effects/minus_hp.mp3",
-                    "death": "./sounds/sound_effects/sound_of_dead.mp3",
-                    "effect_done": "./sounds/sound_effects/bonus_taken_effect.mp3",
-                    "level_complete": "./sounds/sound_effects/win_sound_1.mp3",
-                    "bonus_taken": "./sounds/sound_effects/bonus_taken_effect.mp3",
-                    "start": "./sounds/sound_effects/start_game.mp3",
-                    "new_record": "./sounds/sound_effects/new_record.mp3",
-                    "win1": "./sounds/sound_effects/win_sound_1.mp3",
-                    "win2": "./sounds/sound_effects/win_sound_2.mp3",
-                    "background_music": "./sounds/background_music/menu_music.mp3"
-                }
-            },
-            "objects_params": {
-                "menu_offset_x": 20,
-                "menu_offset_y": 300,
-                "menu_button_w": 80,
-                "menu_button_h": 50,
-                "button_text_color": colors.WHITE,
-                "button_normal_back_color": colors.INDIANRED1,
-                "button_hover_back_color": colors.INDIANRED2,
-                "button_pressed_back_color": colors.INDIANRED3,
-                "brick_width": 60,
-                "brick_height": 20,
-                "brick_color": colors.RED1,
-                "bowl_speed": 3,
-                "bowl_radius": 8,
-                "bowl_color": colors.GREEN,
-                "paddle_width": 80,
-                "paddle_height": 10,
-                "paddle_color": colors.ALICEBLUE,
-                "paddle_speed": 6
-            },
-            "info_panels_params": {
-                "status_offset_y": 5,
-                "text_color": colors.YELLOW1,
-                "lives_right_offset": 85,
-                "lives_offset": 715,
-                "score_offset": 5
-            },
-            "text_message_params": {
-                "font_name": "Arial",
-                "font_size": 20,
-                "death_message_duration": 5,
-                "start_message_duration": 2,
-                "win_message_duration": 4
-            },
-            "level_open_flags": {
-                "LEVEL1": True,
-                "LEVEL2": False,
-                "LEVEL3": False,
-                "LEVEL4": False,
-                "LEVEL5": False
-            }
-        }, f, indent="\t")
-"""

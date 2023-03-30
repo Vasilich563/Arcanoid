@@ -62,7 +62,6 @@ class Ui_recordsDialog(object):
         self.recordsTable.setColumnCount(2)
         self.recordsTable.setRowCount(5)
         self.recordsTable.setEnabled(False)
-
         item = QtWidgets.QTableWidgetItem()
         self.recordsTable.setVerticalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -137,4 +136,4 @@ def make_record_dialog(config, new_record: int = 0) -> NoReturn:
     ui = Ui_recordsDialog()
     ui.setupUi(recordsDialog, config, new_record)
     recordsDialog.show()
-    sys.exit(app.exec_())
+    app.exec()

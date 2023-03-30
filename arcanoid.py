@@ -16,7 +16,7 @@ import colors
 from records_dialog import make_record_dialog
 
 
-class Breakout(GameKernel):
+class Arcanoid(GameKernel):
     def __init__(self):
         self.config = ConfigController()
         GameKernel.__init__(self, 'Arcanoid04', self.config.screen_width, self.config.screen_height,
@@ -33,13 +33,14 @@ class Breakout(GameKernel):
         self._bowl = None
         self._menu_buttons = []
         self._is_game_running = False
+        self._current_game_over = False
         self._accelerate_paddle_flag = False
         self._make_special_effects()
         self._create_menu()
         self._points_per_brick = 1
         self._sound_effects["background_music"].play()
         self._background_music_start = datetime.now()
-        self._bricks_break_amount = 0
+        self._broken_bricks_amount = 0
 
     def _make_special_effects(self) -> NoReturn:
         self.special_effects = dict(
@@ -49,7 +50,7 @@ class Breakout(GameKernel):
             slow_bowl=(
                 colors.AQUAMARINE2, lambda g: g.change_bowl_speed(-1), lambda g: g.change_bowl_speed(1)),
             tripple_points=(
-                colors.DARKSEAGREEN4, lambda g: g.set_points_per_brick(3), lambda g: g.set_points_per_brick(1)),
+                colors.DARKSEAGREEN4, lambda g: g.set_points_per_brick(5), lambda g: g.set_points_per_brick(1)),
             extra_life=(
                 colors.GOLD1, lambda g: g.add_life(), lambda g: None))
 
@@ -66,7 +67,6 @@ class Breakout(GameKernel):
     def _on_play(self, button) -> NoReturn:
         for b in self._menu_buttons:
             self._objects.remove(b)
-
         self._is_game_running = True
         self._start_level = True
         self._sound_effects["start"].play()
@@ -74,7 +74,6 @@ class Breakout(GameKernel):
     def _on_quit(self, button) -> NoReturn:
         self._game_over = True
         self._is_game_running = False
-        self._game_over = True
 
     def _on_show_stats(self, button) -> NoReturn:
         make_record_dialog(self.config)
@@ -85,6 +84,13 @@ class Breakout(GameKernel):
                    self.config.menu_button_h, "STATS", self._on_show_stats, padding=5)
         self._objects.append(b)
         self._menu_buttons.append(b)
+        self._mouse_handlers.append(b.handle_mouse_event)
+
+    def _make_play_button(self) -> NoReturn:
+        b = Button(self.config, self.config.menu_offset_x, self.config.screen_height // 2 + self.config.font_size,
+                   self.config.menu_button_w, self.config.menu_button_h, "PLAY", self._on_play, padding=5)
+        self._objects.append(b)
+        self._menu_buttons.insert(0, b)
         self._mouse_handlers.append(b.handle_mouse_event)
 
     @staticmethod
@@ -103,13 +109,15 @@ class Breakout(GameKernel):
             raise ValueError("Unknown button")
 
     def _on_load_level(self, button) -> NoReturn:
-        self._make_stats_button()
-        self.config.load_level_info(self._define_level_number(button))
-        self._current_level = self._define_level_number(button)
-        self._create_objects()
+        if self._define_level_number(button) != self._current_level:
+            self._make_play_button()
+            self._make_stats_button()
+            self.config.load_level_info(self._define_level_number(button))
+            self._current_level = self._define_level_number(button)
+            self._create_objects()
 
     def _make_buttons(self) -> List:
-        res_buttons = [('PLAY', self._on_play), ('QUIT', self._on_quit)]
+        res_buttons = [('QUIT', self._on_quit)]
         if self.config.level_open_flags["LEVEL 1"]:
             res_buttons.append(('LEVEL 1', self._on_load_level))
         if self.config.level_open_flags["LEVEL 2"]:
@@ -122,18 +130,19 @@ class Breakout(GameKernel):
             res_buttons.append(('LEVEL 5', self._on_load_level))
         return res_buttons
 
-    def create_menu(self) -> NoReturn:
+    def create_menu_buttons(self) -> NoReturn:
         for i, (text, click_handler) in enumerate(self._make_buttons()):
-            b = Button(self.config, self.config.menu_offset_x,
-                       self.config.font_size + self.config.status_offset_y + (self.config.menu_button_h + 5) * i,
-                       self.config.menu_button_w, self.config.menu_button_h, text, click_handler, padding=5)
+            b = Button(self.config, self.config.menu_offset_x +
+                       (self.config.menu_button_w + self.config.menu_button_interval) * (i + 1),
+                       self.config.screen_height // 2 + self.config.font_size, self.config.menu_button_w,
+                       self.config.menu_button_h, text, click_handler, padding=5)
             self._objects.append(b)
             self._menu_buttons.append(b)
             self._mouse_handlers.append(b.handle_mouse_event)
 
     def _create_menu(self) -> NoReturn:
         self.create_labels()
-        self.create_menu()
+        self.create_menu_buttons()
 
     def _create_objects(self) -> NoReturn:
         self.create_bricks()
@@ -267,8 +276,9 @@ class Breakout(GameKernel):
             self._lives -= 1
             self._score -= 5
             if self._lives == 0:
-                self._game_over = True
+                self._current_game_over = True
                 self._sound_effects["death"].play()
+                self._new_game()
             else:
                 self._lost_hp()
         if self._bowl.top < 0:
@@ -284,7 +294,7 @@ class Breakout(GameKernel):
             edge = self._intersect(brick, self._bowl)
             if not edge:
                 continue
-            self._bricks_break_amount += 1
+            self._broken_bricks_amount += 1
             self._sound_effects['brick_hit'].play()
             self._bricks.remove(brick)
             self.objects.remove(brick)
@@ -319,13 +329,15 @@ class Breakout(GameKernel):
             return
         if self._reset_effect:
             self._update_effect_duration()
-        if self._bricks_break_amount >= self.config.bowl_acceleration_interval:
+        if self._broken_bricks_amount >= self.config.bowl_acceleration_interval:
             self._bowl_acceleration()
             self._paddle_acceleration()
         self.handle_bowl_collisions()
         super().update()
-        if self._game_over:
+        if self._current_game_over:
             self.show_message('GAME OVER!', self.config.death_message_duration, centralized=True)
+            print()
+            self._new_game()
 
     def _update_effect_duration(self) -> NoReturn:
         if datetime.now() - self._effect_start_time >= timedelta(seconds=self.config.effect_duration):
@@ -355,6 +367,25 @@ class Breakout(GameKernel):
         elif self._current_level == Levels.LEVEL4 and not self.config.level_open_flags["LEVEL 5"]:
             self.config.level_open_flags["LEVEL 5"] = True
 
+    def _new_game(self):
+        self._reset_effect = None
+        self._effect_start_time = None
+        self._current_level = None
+        self._lives = self.config.initial_lives
+        self._score = 5 * self._lives
+        self._start_level = False
+        self._paddle = None
+        self._bricks = None
+        self._bowl = None
+        self.objects.clear()
+        self._menu_buttons.clear()
+        self.mouse_handlers.clear()
+        self._is_game_running = False
+        self._current_game_over = False
+        self._accelerate_paddle_flag = False
+        self._create_menu()
+        self._broken_bricks_amount = 0
+
     def _win(self) -> NoReturn:
         self._unlock_new_level()
         self.config.update_general_config()
@@ -363,16 +394,18 @@ class Breakout(GameKernel):
             self._sound_effects[win_msg].play()
             self.show_message('YOU WIN!!!', self.config.win_message_duration, centralized=True)
             self._is_game_running = False
-            self._game_over = True
+            self._current_game_over = True
+            self._new_game()
         else:
             self._sound_effects["new_record"].play()
             self.show_message('NEW RECORD!!!', self.config.win_message_duration, centralized=True)
             make_record_dialog(self.config, self._score)
             self._is_game_running = False
-            self._game_over = True
+            self._current_game_over = True
+            self._new_game()
 
     def _lost_hp(self):
-        self._bricks_break_amount = 0
+        self._broken_bricks_amount = 0
         self._sound_effects['minus_hp'].play()
         self.create_bowl()
         self._paddle.base_speed()
@@ -386,7 +419,7 @@ class Breakout(GameKernel):
 
     def _bowl_acceleration(self) -> NoReturn:
         self._bowl.accelerate()
-        self._bricks_break_amount = 0
+        self._broken_bricks_amount = 0
 
     def _paddle_acceleration(self) -> NoReturn:
         if self._accelerate_paddle_flag:
@@ -405,7 +438,7 @@ class Breakout(GameKernel):
 
 
 def main() -> NoReturn:
-    Breakout().run()
+    Arcanoid().run()
 
 
 if __name__ == '__main__':

@@ -25,16 +25,17 @@
 		"level_open_flags": {
 			"LEVEL 1": true,
 			"LEVEL 2": true,
-			"LEVEL 3": false,
-			"LEVEL 4": false,
-			"LEVEL 5": false
+			"LEVEL 3": true,
+			"LEVEL 4": true,
+			"LEVEL 5": true
 		}
 	},
 	"objects_params": {
 		"menu_offset_x": 20,
 		"menu_offset_y": 300,
-		"menu_button_w": 80,
+		"menu_button_w": 86,
 		"menu_button_h": 50,
+		"menu_button_interval": 26,
 		"button_text_color": [
 			255,
 			255,
@@ -65,9 +66,9 @@
 		"bowl_speed": 3,
 		"bowl_radius": 8,
 		"bowl_color": [
-			0,
-			128,
-			0
+			135,
+			206,
+			255
 		],
 		"bowl_acceleration": 1,
 		"paddle_width": 80,
