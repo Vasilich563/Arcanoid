@@ -91,11 +91,13 @@ class ConfigController:
 
     def load_level_info(self, level_number: Levels) -> NoReturn:
         if isinstance(level_number, Levels):
-            self._unpack_bricks_location_params(self._load_json_config(level_number.value)["bricks_location_params"])
-            self.bowl_acceleration_interval = self._load_json_config(level_number.value)["bowl_acceleration_interval"]
-            self.level_records = self._load_json_config(level_number.value)["level_records"]
+            unpacked_data = self._load_json_config(level_number.value)
+            self._unpack_bricks_location_params(unpacked_data["bricks_location_params"])
+            self.bowl_acceleration_interval = unpacked_data["bowl_acceleration_interval"]
+            self.level_records = unpacked_data["level_records"]
             self.level_records = dict(sorted(self.level_records.items(), key=lambda item: item[1], reverse=True))
             self.level_config_file = level_number.value
+            self.max_effects_amount = unpacked_data["max_effects_amount"]
         else:
             raise ValueError(f"Unknown level {level_number}")
 
@@ -111,7 +113,8 @@ class ConfigController:
                         "row_count": self.row_count,
                         "brick_width": self.brick_width,
                         "offset_y": self.offset_y
-                    }
+                    },
+                    "max_effects_amount": self.max_effects_amount
                 }
                 return json.dump(new_config_data, config_file, indent='\t')
             raise ValueError(f"No such file {self.level_config_file}")

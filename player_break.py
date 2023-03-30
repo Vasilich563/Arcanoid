@@ -13,7 +13,7 @@ class Paddle(MySprite):
         self._moving_left = False
         self._moving_right = False
         self.screen_width = config_controller.screen_width
-        self._aceleration = config_controller.bowl_acceleration
+        self._aceleration = 2 * config_controller.bowl_acceleration
 
     def accelerate(self):
         self.speed = self.speed[0] + self._aceleration, self.speed[1]

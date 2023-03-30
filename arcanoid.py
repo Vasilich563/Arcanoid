@@ -32,8 +32,9 @@ class Arcanoid(GameKernel):
         self._bricks = None
         self._bowl = None
         self._menu_buttons = []
+        self._stats_button = None
+        self._play_button = None
         self._is_game_running = False
-        self._current_game_over = False
         self._accelerate_paddle_flag = False
         self._make_special_effects()
         self._create_menu()
@@ -64,7 +65,7 @@ class Arcanoid(GameKernel):
     def change_bowl_speed(self, dy) -> NoReturn:
         self._bowl.speed = (self._bowl.speed[0], self._bowl.speed[1] + dy)
 
-    def _on_play(self, button) -> NoReturn:
+    def _on_play(self, button: List[Button]) -> NoReturn:
         for b in self._menu_buttons:
             self._objects.remove(b)
         self._is_game_running = True
@@ -79,19 +80,29 @@ class Arcanoid(GameKernel):
         make_record_dialog(self.config)
 
     def _make_stats_button(self) -> NoReturn:
+        if self._stats_button:
+            self._objects.remove(self._stats_button)
+            self._menu_buttons.remove(self._stats_button)
+            self._mouse_handlers.remove(self._stats_button.handle_mouse_event)
         b = Button(self.config, self.config.menu_offset_x, self.config.font_size + self.config.status_offset_y +
-                   (self.config.menu_button_h + 5) * len(self._menu_buttons), self.config.menu_button_w,
+                   (self.config.menu_button_h + 5) * 7, self.config.menu_button_w,
                    self.config.menu_button_h, "STATS", self._on_show_stats, padding=5)
         self._objects.append(b)
         self._menu_buttons.append(b)
         self._mouse_handlers.append(b.handle_mouse_event)
+        self._stats_button = b
 
     def _make_play_button(self) -> NoReturn:
+        if self._play_button:
+            self._objects.remove(self._play_button)
+            self._menu_buttons.remove(self._play_button)
+            self._mouse_handlers.remove(self._play_button.handle_mouse_event)
         b = Button(self.config, self.config.menu_offset_x, self.config.screen_height // 2 + self.config.font_size,
                    self.config.menu_button_w, self.config.menu_button_h, "PLAY", self._on_play, padding=5)
         self._objects.append(b)
         self._menu_buttons.insert(0, b)
         self._mouse_handlers.append(b.handle_mouse_event)
+        self._play_button = b
 
     @staticmethod
     def _define_level_number(button) -> Levels:
@@ -110,6 +121,8 @@ class Arcanoid(GameKernel):
 
     def _on_load_level(self, button) -> NoReturn:
         if self._define_level_number(button) != self._current_level:
+            if self._current_level:
+                self._new_game()
             self._make_play_button()
             self._make_stats_button()
             self.config.load_level_info(self._define_level_number(button))
@@ -178,22 +191,27 @@ class Arcanoid(GameKernel):
         self.objects.append(self._paddle)
 
     def create_bricks(self) -> NoReturn:
+        def make_brick(self: Arcanoid, w, h, offset_x, row, col) -> Brick:
+            effect = None
+            brick_color = self.config.brick_color
+            index = random.randint(0, 10)
+            nonlocal bricks_with_effect_amount
+            if bricks_with_effect_amount < self.config.max_effects_amount and index < len(self.special_effects):
+                brick_color, start_effect_func, reset_effect_func = list(self.special_effects.values())[index]
+                effect = start_effect_func, reset_effect_func
+                bricks_with_effect_amount += 1
+
+            return Brick(offset_x + col * (w + 1), self.config.offset_y + row * (h + 1), w, h, brick_color, effect)
+
+        bricks_with_effect_amount = 0
         w = self.config.brick_width
         h = self.config.brick_height
         brick_count = self.config.screen_width // (w + 1)
         offset_x = (self.config.screen_width - brick_count * (w + 1)) // 2
-        self._bowl_acceleration_interval = self.config.bowl_acceleration_interval
         bricks = []
         for row in range(self.config.row_count):
             for col in range(brick_count):
-                effect = None
-                brick_color = self.config.brick_color
-                index = random.randint(0, 10)
-                if index < len(self.special_effects):
-                    brick_color, start_effect_func, reset_effect_func = list(self.special_effects.values())[index]
-                    effect = start_effect_func, reset_effect_func
-
-                brick = Brick(offset_x + col * (w + 1), self.config.offset_y + row * (h + 1), w, h, brick_color, effect)
+                brick = make_brick(self, w, h, offset_x, row, col)
                 bricks.append(brick)
                 self.objects.append(brick)
         self._bricks = bricks
@@ -276,11 +294,12 @@ class Arcanoid(GameKernel):
             self._lives -= 1
             self._score -= 5
             if self._lives == 0:
-                self._current_game_over = True
                 self._sound_effects["death"].play()
+                self.show_message('GAME OVER!', self.config.death_message_duration, centralized=True)
                 self._new_game()
+                return
             else:
-                self._lost_hp()
+                self._lose_hp()
         if self._bowl.top < 0:
             self._bowl.speed = (speed[0], -speed[1])
             self._sound_effects["wall_hit"].play()
@@ -288,17 +307,20 @@ class Arcanoid(GameKernel):
             self._bowl.speed = (-speed[0], speed[1])
             self._sound_effects["wall_hit"].play()
 
+    def _break_brick(self, brick: Brick):
+        self._broken_bricks_amount += 1
+        self._sound_effects['brick_hit'].play()
+        self._bricks.remove(brick)
+        self.objects.remove(brick)
+        self._score += self._points_per_brick
+
     def _hit_brick(self) -> NoReturn:
         speed = self._bowl.speed
         for brick in self._bricks:
             edge = self._intersect(brick, self._bowl)
             if not edge:
                 continue
-            self._broken_bricks_amount += 1
-            self._sound_effects['brick_hit'].play()
-            self._bricks.remove(brick)
-            self.objects.remove(brick)
-            self._score += self._points_per_brick
+            self._break_brick(brick)
             if edge in ('top', 'bottom'):
                 self._bowl.speed = (speed[0], -speed[1])
             else:
@@ -314,8 +336,8 @@ class Arcanoid(GameKernel):
 
     def handle_bowl_collisions(self) -> NoReturn:
         self._hit_paddle()
-        self._hit_screen_bounds()
         self._hit_brick()
+        self._hit_screen_bounds()
 
     def update(self) -> NoReturn:
         self._update_background_music()
@@ -334,10 +356,6 @@ class Arcanoid(GameKernel):
             self._paddle_acceleration()
         self.handle_bowl_collisions()
         super().update()
-        if self._current_game_over:
-            self.show_message('GAME OVER!', self.config.death_message_duration, centralized=True)
-            print()
-            self._new_game()
 
     def _update_effect_duration(self) -> NoReturn:
         if datetime.now() - self._effect_start_time >= timedelta(seconds=self.config.effect_duration):
@@ -380,8 +398,9 @@ class Arcanoid(GameKernel):
         self.objects.clear()
         self._menu_buttons.clear()
         self.mouse_handlers.clear()
+        self._stats_button = None
+        self._play_button = None
         self._is_game_running = False
-        self._current_game_over = False
         self._accelerate_paddle_flag = False
         self._create_menu()
         self._broken_bricks_amount = 0
@@ -394,17 +413,15 @@ class Arcanoid(GameKernel):
             self._sound_effects[win_msg].play()
             self.show_message('YOU WIN!!!', self.config.win_message_duration, centralized=True)
             self._is_game_running = False
-            self._current_game_over = True
             self._new_game()
         else:
             self._sound_effects["new_record"].play()
             self.show_message('NEW RECORD!!!', self.config.win_message_duration, centralized=True)
             make_record_dialog(self.config, self._score)
             self._is_game_running = False
-            self._current_game_over = True
             self._new_game()
 
-    def _lost_hp(self):
+    def _lose_hp(self):
         self._broken_bricks_amount = 0
         self._sound_effects['minus_hp'].play()
         self.create_bowl()
