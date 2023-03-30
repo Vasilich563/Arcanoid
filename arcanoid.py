@@ -461,5 +461,4 @@ def main() -> NoReturn:
 if __name__ == '__main__':
     main()
 
-# TODO Normalize configs
-# TODO Make levels configs
+# TODO Make tuturial
