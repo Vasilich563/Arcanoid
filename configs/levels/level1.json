@@ -1,0 +1,15 @@
+{
+	"bowl_acceleration_interval": 8,
+	"level_records": {
+		"Loh": 53,
+		"Loh Kostya": 45,
+		"Kostya bidlo": 36,
+		"Aboba": 31,
+		"dwelpfsrgkdfhnjoiytdrlsek;afrsgcnv": 31
+	},
+	"bricks_location_params": {
+		"row_count": 2,
+		"brick_width": 60,
+		"offset_y": 30
+	}
+}
