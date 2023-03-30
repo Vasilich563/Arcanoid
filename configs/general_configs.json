@@ -66,9 +66,9 @@
 		"bowl_speed": 3,
 		"bowl_radius": 8,
 		"bowl_color": [
-			135,
-			206,
-			255
+            135,
+            206,
+            255
 		],
 		"bowl_acceleration": 1,
 		"paddle_width": 80,

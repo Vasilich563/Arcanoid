@@ -444,5 +444,5 @@ def main() -> NoReturn:
 if __name__ == '__main__':
     main()
 
-
-# TODO load_level_info(self, level_number: Levels) -> NoReturn:
+# TODO Normalize configs
+# TODO Make levels configs
