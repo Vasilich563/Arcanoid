@@ -1,4 +1,4 @@
-#Author Vodohleb04
+# Author Vodohleb04
 import random
 from typing import Tuple, NoReturn
 
@@ -15,13 +15,13 @@ class Bowl(MySprite):
         self._color = color
         self._acceleration = acceleration
         
-    def draw(self, surface):
+    def draw(self, surface) -> NoReturn:
         pygame.draw.circle(surface, self._color, self.center, self.radius)
 
-    def update(self):
+    def update(self) -> NoReturn:
         super().update()
 
-    def _zero_speed_case(self):
+    def _zero_speed_case(self) -> Tuple[int, int]:
         new_x_speed = 0
         new_y_speed = 0
         if self._speed[0] == 0:
@@ -36,7 +36,7 @@ class Bowl(MySprite):
                 new_x_speed = (abs(self._speed[0]) + self._acceleration) * (self.speed[0] / abs(self._speed[0]))
         return new_x_speed, new_y_speed
 
-    def accelerate(self):
+    def accelerate(self) -> NoReturn:
         new_x_speed = 0
         new_y_speed = 0
         zero_flag = False

@@ -1,4 +1,4 @@
-#Author Vodohleb04
+# Author Vodohleb04
 import random
 from datetime import datetime, timedelta
 import time
@@ -321,7 +321,7 @@ class Arcanoid(GameKernel):
             self._bowl.speed = (-speed[0], speed[1])
             self._sound_effects["wall_hit"].play()
 
-    def _break_brick(self, brick: Brick):
+    def _break_brick(self, brick: Brick) -> NoReturn:
         self._broken_bricks_amount += 1
         self._sound_effects['brick_hit'].play()
         self._bricks.remove(brick)
@@ -399,7 +399,7 @@ class Arcanoid(GameKernel):
         elif self._current_level == Levels.LEVEL4 and not self.config.level_open_flags["LEVEL 5"]:
             self.config.level_open_flags["LEVEL 5"] = True
 
-    def _new_game(self):
+    def _new_game(self) -> NoReturn:
         self._reset_effect = None
         self._effect_start_time = None
         self._current_level = None
@@ -435,7 +435,7 @@ class Arcanoid(GameKernel):
             self._is_game_running = False
             self._new_game()
 
-    def _lose_hp(self):
+    def _lose_hp(self) -> NoReturn:
         self._broken_bricks_amount = 0
         self._sound_effects['minus_hp'].play()
         self.create_bowl()
@@ -459,7 +459,8 @@ class Arcanoid(GameKernel):
         else:
             self._accelerate_paddle_flag = True
 
-    def show_message(self, text, duration, color=colors.WHITE, font_name='Arial', font_size=20, centralized=False):
+    def show_message(self, text, duration, color=colors.WHITE, font_name='Arial', font_size=20, centralized=False)\
+            -> NoReturn:
         message = TextObject(self.config.screen_width // 2, self.config.screen_height // 2, lambda: text, color,
                              font_name, font_size)
         self.draw()
@@ -475,4 +476,3 @@ def main() -> NoReturn:
 if __name__ == '__main__':
     main()
 
-# TODO Make tuturial

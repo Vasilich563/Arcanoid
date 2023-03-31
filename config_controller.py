@@ -1,6 +1,6 @@
 # Author Vodohleb04
 from enum import Enum
-from typing import Dict, NoReturn
+from typing import Dict, NoReturn, Any
 
 import json
 
@@ -120,7 +120,7 @@ class ConfigController:
                 return json.dump(new_config_data, config_file, indent='\t')
             raise ValueError(f"No such file {self.level_config_file}")
 
-    def _pack_general_params(self):
+    def _pack_general_params(self) -> Dict[str, Any]:
         return {
             "background_image": self.background_image,
             "screen_width": self.screen_width,
@@ -134,7 +134,7 @@ class ConfigController:
             "help_messages": self.help_messages
         }
 
-    def _pack_object_params(self):
+    def _pack_object_params(self) -> Dict[str, Any]:
         return {
             "menu_offset_x": self.menu_offset_x,
             "menu_offset_y": self.menu_offset_y,
@@ -158,7 +158,7 @@ class ConfigController:
             "paddle_speed": self.paddle_speed
         }
 
-    def _pack_info_panels_params(self):
+    def _pack_info_panels_params(self) -> Dict[str, Any]:
         return {
             "status_offset_y": self.status_offset_y,
             "text_color": self.text_color,
@@ -167,7 +167,7 @@ class ConfigController:
             "score_offset": self.score_offset
         }
 
-    def _pack_text_message_params(self):
+    def _pack_text_message_params(self) -> Dict[str, Any]:
         return {
             "font_name": self.font_name,
             "font_size": self.font_size,

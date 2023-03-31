@@ -1,4 +1,4 @@
-#Author Vodohleb04
+# Author Vodohleb04
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'records_dialog.ui'
@@ -84,7 +84,7 @@ class Ui_recordsDialog(object):
         self.scoreDialogButtonBox.rejected.connect(recordsDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(recordsDialog)
 
-    def _replace_last_element(self, level_records: Dict[str, int], new_name: str, new_scores: int):
+    def _replace_last_element(self, level_records: Dict[str, int], new_name: str, new_scores: int) -> NoReturn:
         i = 0
         name_to_change = ""
         for name, _ in level_records.items():

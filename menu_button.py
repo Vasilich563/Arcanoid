@@ -1,5 +1,5 @@
-#Author Vodohleb04
-from typing import NoReturn
+# Author Vodohleb04
+from typing import NoReturn, Tuple
 
 import pygame
 
@@ -50,5 +50,5 @@ class Button(MySprite):
             self.state = 'hover'
 
     @property
-    def back_color(self):
+    def back_color(self) -> Tuple[int, int, int]:
         return self._back_colors[self.state]

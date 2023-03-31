@@ -1,4 +1,6 @@
-#Author Vodohleb04
+# Author Vodohleb04
+from typing import NoReturn
+
 import pygame
 
 
@@ -11,7 +13,7 @@ class TextObject:
         self._font = pygame.font.SysFont(font_name, font_size)
         self._bounds = self.get_surface(text_func())
 
-    def draw(self, surface, centralized=False):
+    def draw(self, surface, centralized=False) -> NoReturn:
         text_surface, self._bounds = self.get_surface(self._text_func())
         pos = (self._pos[0] - self._bounds.width // 2, self._pos[1]) if centralized else self._pos
         surface.blit(text_surface, pos)

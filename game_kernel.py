@@ -1,5 +1,5 @@
 # Author: Vodolheb04
-from typing import NoReturn
+from typing import NoReturn, List
 
 import pygame
 import sys
@@ -66,9 +66,9 @@ class GameKernel:
         return self._keyup_handlers
 
     @property
-    def mouse_handlers(self):
+    def mouse_handlers(self) -> List:
         return self._mouse_handlers
 
     @property
-    def objects(self):
+    def objects(self) -> List:
         return self._objects

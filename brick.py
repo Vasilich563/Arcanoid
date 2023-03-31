@@ -1,4 +1,6 @@
-#Author Vodohleb04
+# Author Vodohleb04
+from typing import NoReturn
+
 import pygame
 
 from my_sprite import MySprite
@@ -10,7 +12,7 @@ class Brick(MySprite):
         self._color = color
         self._special_effect = special_effect
 
-    def draw(self, surface):
+    def draw(self, surface) -> NoReturn:
         pygame.draw.rect(surface, self._color, self._bounds)
 
     @property

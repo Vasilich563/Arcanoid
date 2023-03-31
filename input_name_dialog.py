@@ -1,4 +1,4 @@
-#Author Vodohleb04
+# Author Vodohleb04
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'input_name_dialog.ui'
@@ -10,7 +10,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from typing import Tuple
+from typing import Tuple, NoReturn
 
 
 class Ui_inputNameDialog(object):
@@ -47,13 +47,13 @@ class Ui_inputNameDialog(object):
         inputNameDialog.setWindowTitle(_translate("inputNameDialog", "Input name"))
         self.nameLineEdit.setPlaceholderText(_translate("inputNameDialog", "Input your name..."))
 
-    def connect_line_edit(self):
+    def connect_line_edit(self) -> NoReturn:
         if not self.nameLineEdit.text():
             self.inputNameDialogButtonBox.button(self.inputNameDialogButtonBox.StandardButton.Ok).setEnabled(False)
         else:
             self.inputNameDialogButtonBox.button(self.inputNameDialogButtonBox.StandardButton.Ok).setEnabled(True)
 
-    def connect_accepted(self):
+    def connect_accepted(self) -> NoReturn:
         self._new_record = self.nameLineEdit.text()
 
     @property
