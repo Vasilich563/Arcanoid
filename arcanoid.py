@@ -14,6 +14,7 @@ from player_break import Paddle
 from text_controller import TextObject
 import colors
 from records_dialog import make_record_dialog
+from help_dialog import  make_help_dialog
 
 
 class Arcanoid(GameKernel):
@@ -79,6 +80,9 @@ class Arcanoid(GameKernel):
     def _on_show_stats(self, button) -> NoReturn:
         make_record_dialog(self.config)
 
+    def _on_show_help(self, button) -> NoReturn:
+        make_help_dialog(self.config)
+
     def _make_stats_button(self) -> NoReturn:
         if self._stats_button:
             self._objects.remove(self._stats_button)
@@ -103,6 +107,15 @@ class Arcanoid(GameKernel):
         self._menu_buttons.insert(0, b)
         self._mouse_handlers.append(b.handle_mouse_event)
         self._play_button = b
+
+    def _make_help_button(self) -> NoReturn:
+        help_button = Button(
+            self.config, self.config.menu_offset_x + self.config.menu_button_w + self.config.menu_button_interval,
+                         self.config.font_size + self.config.status_offset_y + (self.config.menu_button_h + 5) * 7,
+            self.config.menu_button_w, self.config.menu_button_h, text='HELP', on_click=self._on_show_help, padding=5)
+        self._objects.append(help_button)
+        self._menu_buttons.append(help_button)
+        self._mouse_handlers.append(help_button.handle_mouse_event)
 
     @staticmethod
     def _define_level_number(button) -> Levels:
@@ -152,6 +165,7 @@ class Arcanoid(GameKernel):
             self._objects.append(b)
             self._menu_buttons.append(b)
             self._mouse_handlers.append(b.handle_mouse_event)
+        self._make_help_button()
 
     def _create_menu(self) -> NoReturn:
         self.create_labels()

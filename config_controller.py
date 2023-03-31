@@ -44,6 +44,7 @@ class ConfigController:
         self.background_music_duration = unpacked_data["background_music_duration"]
         self.sounds_effects = unpacked_data["sounds_effects"]
         self.level_open_flags = unpacked_data["level_open_flags"]
+        self.help_messages = unpacked_data["help_messages"]
 
     def _unpack_objects_params(self, unpacked_data: Dict) -> NoReturn:
         self.menu_offset_x = unpacked_data["menu_offset_x"]
@@ -129,7 +130,8 @@ class ConfigController:
             "initial_lives": self.initial_lives,
             "background_music_duration": self.background_music_duration,
             "sounds_effects": self.sounds_effects,
-            "level_open_flags": self.level_open_flags
+            "level_open_flags": self.level_open_flags,
+            "help_messages": self.help_messages
         }
 
     def _pack_object_params(self):
@@ -179,7 +181,7 @@ class ConfigController:
             "general_params": self._pack_general_params(),
             "objects_params": self._pack_object_params(),
             "info_panels_params": self._pack_info_panels_params(),
-            "text_message_params": self._pack_text_message_params()
+            "text_message_params": self._pack_text_message_params(),
         }
         with open(GENERAL_CONFIGS_FILE, 'w') as config_file:
             json.dump(new_config_data, config_file, indent='\t')
