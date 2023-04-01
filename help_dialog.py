@@ -67,9 +67,9 @@ class Ui_helpDialog(object):
         elif self.helpComboBox.currentIndex() == 2:
             self.textArea.setText(config.help_messages["bricks_info"])
         elif self.helpComboBox.currentIndex() == 3:
-            self.textArea.setText(config.help_messages["acceleration_info"])
-        elif self.helpComboBox.currentIndex() == 4:
             self.textArea.setText(config.help_messages["levels_info"])
+        elif self.helpComboBox.currentIndex() == 4:
+            self.textArea.setText(config.help_messages["acceleration_info"])
         else:
             raise ValueError("Unexpected index")
 
@@ -81,4 +81,4 @@ def make_help_dialog(config: ConfigController) -> NoReturn:
     ui = Ui_helpDialog()
     ui.setupUi(helpDialog, config)
     helpDialog.show()
-    sys.exit(app.exec_())
+    app.exec()

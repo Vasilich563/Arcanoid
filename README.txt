@@ -1,4 +1,4 @@
-Arcanoid version 1.0
+Arcanoid version 1.1
 Author: Vodohleb04 (Якубовский Кирилл Васильевич, группа 121703)
 Лр.3
 Обучение содержится в самой игре.

@@ -12,7 +12,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from typing import Dict, NoReturn
 from input_name_dialog import Ui_inputNameDialog
-import json
 
 
 class Ui_recordsDialog(object):
